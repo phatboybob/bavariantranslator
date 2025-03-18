@@ -8,15 +8,11 @@ import streamlit as st
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import PromptTemplate
 
-os.environ['GROQ_API_KEY'] = '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'
-
-
-model = init_chat_model("llama3-8b-8192", model_provider="groq")
-
 
 def translate(input_language: str,
               input_text: str,
               output_language: str,
+              model,
               ):
     """_summary_
 
@@ -42,12 +38,17 @@ def translate(input_language: str,
 
 
 
-st.set_page_config(page_title='Sevus',
+st.set_page_config(page_title='Servus',
                    page_icon='🍺',
                    layout='centered',
                    )
 
-st.title('Sevus! 🍺')
+st.title('Servus! 🍺')
+api_key = st.text_area(label='Enter API Key')
+if api_key:
+    os.environ['GROQ_API_KEY'] = api_key
+    model = init_chat_model("llama3-8b-8192", model_provider="groq")
+
 language_container = st.container()
 language = language_container.selectbox(label='Select Original Language',
                                         options=['English', 'Bavarian'],
@@ -59,7 +60,9 @@ if language == 'English':
     if st.button('Translate to Bavarian'):
         translated_text = translate(input_language = 'English',
                                     input_text = text,
-                                    output_language = 'Bavarian',)
+                                    output_language = 'Bavarian',
+                                    model = model,
+                                    )
         st.write(translated_text)
 
 if language == 'Bavarian':
@@ -67,5 +70,7 @@ if language == 'Bavarian':
     if st.button('Translate to English'):
         translated_text = translate(input_language = 'Bavarian',
                                     input_text = text,
-                                    output_language = 'English',)
+                                    output_language = 'English',
+                                    model = model,
+                                    )
         st.write(translated_text)
